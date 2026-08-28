@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "updated": "2026-08-28",
+  "minAgentVersion": "1.0.0",
+  "presets": [
+    {
+      "id": "vless-reality-vision",
+      "name": { "ru": "VLESS + REALITY (Vision)", "en": "VLESS + REALITY (Vision)" },
+      "protocol": "vless",
+      "transport": "tcp",
+      "security": "reality",
+      "flow": "xtls-rprx-vision",
+      "rfReliability": 5,
+      "requiresDomain": false,
+      "udpOverTcp": true,
+      "defaultPort": 443,
+      "handshakeCandidates": ["www.microsoft.com", "www.samsung.com", "www.icloud.com", "cdn.jsdelivr.net"],
+      "tags": ["recommended", "no-domain"],
+      "notes": {
+        "ru": "Эталон обхода DPI: трафик неотличим от TLS-соединения с чужим популярным сайтом. Домен не нужен.",
+        "en": "DPI-resistant baseline: traffic is indistinguishable from TLS to a real popular site. No domain needed."
+      }
+    },
+    {
+      "id": "vless-reality-grpc",
+      "name": { "ru": "VLESS + gRPC + REALITY", "en": "VLESS + gRPC + REALITY" },
+      "protocol": "vless",
+      "transport": "grpc",
+      "security": "reality",
+      "rfReliability": 4,
+      "requiresDomain": false,
+      "defaultPort": 443,
+      "handshakeCandidates": ["www.microsoft.com", "www.cloudflare.com"],
+      "tags": ["no-domain", "multiplex"],
+      "notes": {
+        "ru": "Длинные gRPC-стримы хорошо переживают нестабильные мобильные сети, чуть выше задержка.",
+        "en": "Long-lived gRPC streams survive flaky mobile networks; slightly higher latency."
+      }
+    },
+    {
+      "id": "anytls-reality",
+      "name": { "ru": "AnyTLS + REALITY", "en": "AnyTLS + REALITY" },
+      "protocol": "anytls",
+      "transport": "tcp",
+      "security": "reality",
+      "rfReliability": 4,
+      "requiresDomain": false,
+      "defaultPort": 8443,
+      "handshakeCandidates": ["www.microsoft.com", "www.apple.com"],
+      "tags": ["no-domain", "padding"],
+      "notes": {
+        "ru": "Маскирует размеры пакетов (padding) — помогает против анализа по длине пакетов.",
+        "en": "Packet-length padding helps against traffic-shape analysis."
+      }
+    },
+    {
+      "id": "shadowtls-ss2022",
+      "name": { "ru": "ShadowTLS v3 + Shadowsocks 2022", "en": "ShadowTLS v3 + Shadowsocks 2022" },
+      "protocol": "shadowsocks",
+      "method": "2022-blake3-aes-128-gcm",
+      "transport": "tcp",
+      "security": "shadowtls",
+      "rfReliability": 4,
+      "requiresDomain": false,
+      "defaultPort": 443,
+      "handshakeCandidates": ["www.microsoft.com", "www.bing.com"],
+      "tags": ["no-domain"],
+      "notes": {
+        "ru": "Реальный TLS-хендшейк с чужим сайтом + быстрый AEAD-канал. Хорошая альтернатива REALITY.",
+        "en": "Real TLS handshake to a foreign site plus a fast AEAD tunnel. Good REALITY alternative."
+      }
+    },
+    {
+      "id": "vless-httpupgrade-tls",
+      "name": { "ru": "VLESS + HTTPUpgrade + TLS (домен)", "en": "VLESS + HTTPUpgrade + TLS (domain)" },
+      "protocol": "vless",
+      "transport": "httpupgrade",
+      "security": "tls",
+      "rfReliability": 4,
+      "requiresDomain": true,
+      "defaultPort": 443,
+      "tags": ["domain", "cdn"],
+      "notes": {
+        "ru": "Выглядит как обычный HTTPS-сайт, работает через CDN (Cloudflare). Нужен домен с сертификатом.",
+        "en": "Looks like a plain HTTPS site and works behind a CDN. Requires a domain with a certificate."
+      }
+    },
+    {
+      "id": "vless-ws-tls",
+      "name": { "ru": "VLESS + WebSocket + TLS (домен)", "en": "VLESS + WebSocket + TLS (domain)" },
+      "protocol": "vless",
+      "transport": "ws",
+      "security": "tls",
+      "rfReliability": 3,
+      "requiresDomain": true,
+      "defaultPort": 443,
+      "tags": ["domain", "cdn"],
+      "notes": {
+        "ru": "Классика, совместима почти со всем и с CDN. Паттерн WS уже неплохо знаком фильтрам.",
+        "en": "Classic and highly compatible, CDN friendly. The WS pattern is well known to filters."
+      }
+    },
+    {
+      "id": "trojan-ws-tls",
+      "name": { "ru": "Trojan + WebSocket + TLS (домен)", "en": "Trojan + WebSocket + TLS (domain)" },
+      "protocol": "trojan",
+      "transport": "ws",
+      "security": "tls",
+      "rfReliability": 3,
+      "requiresDomain": true,
+      "defaultPort": 443,
+      "tags": ["domain"],
+      "notes": {
+        "ru": "Отдаёт заглушку-сайт на неверный пароль, поэтому активные пробы видят обычный веб-сервер.",
+        "en": "Serves a decoy site on wrong credentials, so active probes see a normal web server."
+      }
+    },
+    {
+      "id": "hysteria2-tls",
+      "name": { "ru": "Hysteria2 (QUIC, домен)", "en": "Hysteria2 (QUIC, domain)" },
+      "protocol": "hysteria2",
+      "transport": "none",
+      "security": "tls",
+      "rfReliability": 3,
+      "requiresDomain": true,
+      "allowSelfSigned": true,
+      "defaultPort": 8443,
+      "udp": true,
+      "tags": ["domain", "fast", "udp"],
+      "notes": {
+        "ru": "Очень быстрый на плохих каналах, но UDP у части операторов РФ режется или блокируется.",
+        "en": "Very fast on lossy links, but UDP is throttled or blocked by some RU carriers."
+      }
+    },
+    {
+      "id": "tuic-tls",
+      "name": { "ru": "TUIC v5 (QUIC, домен)", "en": "TUIC v5 (QUIC, domain)" },
+      "protocol": "tuic",
+      "transport": "none",
+      "security": "tls",
+      "rfReliability": 2,
+      "requiresDomain": true,
+      "allowSelfSigned": true,
+      "defaultPort": 8444,
+      "udp": true,
+      "tags": ["domain", "udp"],
+      "notes": {
+        "ru": "Низкая задержка на QUIC, но заметен для DPI по QUIC-фингерпринту и страдает от блокировок UDP.",
+        "en": "Low-latency QUIC, but visible via QUIC fingerprinting and hurt by UDP blocking."
+      }
+    },
+    {
+      "id": "vmess-ws-tls",
+      "name": { "ru": "VMess + WebSocket + TLS (домен)", "en": "VMess + WebSocket + TLS (domain)" },
+      "protocol": "vmess",
+      "transport": "ws",
+      "security": "tls",
+      "rfReliability": 2,
+      "requiresDomain": true,
+      "defaultPort": 2053,
+      "tags": ["domain", "legacy"],
+      "notes": {
+        "ru": "Только для совместимости со старыми клиентами: паттерн VMess давно детектируется.",
+        "en": "Legacy compatibility only: the VMess pattern has long been detectable."
+      }
+    },
+    {
+      "id": "ss2022-plain",
+      "name": { "ru": "Shadowsocks 2022 (без маскировки)", "en": "Shadowsocks 2022 (no camouflage)" },
+      "protocol": "shadowsocks",
+      "method": "2022-blake3-aes-128-gcm",
+      "transport": "tcp",
+      "security": "none",
+      "rfReliability": 2,
+      "requiresDomain": false,
+      "defaultPort": 8388,
+      "tags": ["no-domain", "fast"],
+      "notes": {
+        "ru": "Максимальная скорость и минимум накладных расходов, но случайный трафик легко выделяется.",
+        "en": "Fastest with least overhead, but random-looking traffic is easy to single out."
+      }
+    }
+  ]
+}
